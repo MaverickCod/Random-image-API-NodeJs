@@ -6,17 +6,23 @@ dotenv.config();
 const app = express();
 const port = 3000;
 
+app.get("/", (req, res) => {
+    res.send("Welcome to the Random Image API! Use /api/image/random to get a random nature image.");
+});
+
 app.get("/api/image/random", async (req, res) => {
     try {
         const response = await axios.get(
             `https://api.unsplash.com/search/photos?page=1&query=nature&client_id=${process.env.UNSPLASH_API_KEY}`
         );
 
-        const imageUrl = response.data.results.map((image) => ({
-            id: image.id,
-            url: image.urls.regular,
-        }));
-
+        const randomImage = response.data.results[
+            Math.floor(Math.random() * response.data.results.length)
+        ];
+        const imageUrl = {
+            id: randomImage.id,
+            url: randomImage.urls.regular,
+        };
         res.json(imageUrl);
     } catch (err) {
         console.log(err.message);
